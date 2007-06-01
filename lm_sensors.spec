@@ -6,7 +6,7 @@
 Summary:        Utilities for lm_sensors
 Name:           lm_sensors
 Version:        2.10.3
-Release:        %mkrel 1
+Release:        %mkrel 2
 License:        GPL
 Group:          System/Kernel and hardware
 URL:            http://www.lm-sensors.nu/
@@ -23,7 +23,7 @@ Requires:       %{lib_name} >= %{version}
 BuildRequires:  bison
 BuildRequires:  chrpath
 BuildRequires:  flex
-BuildRequires:  kernel-source >= %{kversion}
+BuildRequires:  kernel-source
 BuildRequires:  librrdtool-devel
 BuildRequires:  libsysfs-devel
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
