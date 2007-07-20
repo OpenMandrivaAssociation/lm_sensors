@@ -5,8 +5,8 @@
 
 Summary:        Utilities for lm_sensors
 Name:           lm_sensors
-Version:        2.10.3
-Release:        %mkrel 2
+Version:        2.10.4
+Release:        %mkrel 1
 License:        GPL
 Group:          System/Kernel and hardware
 URL:            http://www.lm-sensors.nu/
@@ -14,8 +14,8 @@ Source0:        ftp://ftp.netroedge.com/pub/lm-sensors/lm_sensors-%{version}.tar
 Source1:        ftp://ftp.netroedge.com/pub/lm-sensors/lm_sensors-%{version}.tar.gz.asc
 Source2:        lm_sensors-2.8.2-sensors
 Patch0:         lm_sensors-2.9.1-misleading_error_message.patch
-Provides:       lm_utils
-Obsoletes:      lm_utils
+Provides:       lm_utils = %{version}-%{release}
+Obsoletes:      lm_utils < %{version}-%{release}
 Requires:       perl
 Requires(pre):  rpm-helper
 Requires(postun): rpm-helper
@@ -58,7 +58,7 @@ Requires:       %{lib_name} = %{version}
 Provides:       %{_lib}%{name}-devel = %{version}-%{release}
 Provides:        %{lib_name_orig}-devel = %{version}-%{release}
 Provides:       %{name}-devel = %{version}-%{release}
-Obsoletes:      %{name}-devel
+Obsoletes:      %{name}-devel < %{version}-%{release}
 
 %description -n %{lib_name}-devel
 Development libraries and header files for lm_sensors.
@@ -81,12 +81,15 @@ This package contains static libraries for lm_sensors.
 %patch0 -p0 -b .misleading_error_message
 
 %build
-%define MAKE_DEFS COMPILE_KERNEL=0 WARN=1 PREFIX=%{_prefix} LINUX=%{_usrsrc}/linux I2C_HEADERS=%{_usrsrc}/linux/include ETCDIR=%{_sysconfdir} MANDIR=%{_mandir} DESTDIR=%{buildroot} PROG_EXTRA:=sensord LIBDIR=%{_libdir}
+%define _MAKE_DEFS COMPILE_KERNEL=0 WARN=1 PREFIX=%{_prefix} LINUX=%{_usrsrc}/linux I2C_HEADERS=%{_usrsrc}/linux/include ETCDIR=%{_sysconfdir} MANDIR=%{_mandir} PROG_EXTRA:=sensord LIBDIR=%{_libdir}
+%define MAKE_DEFS %{_MAKE_DEFS}
 
 %{make} %{MAKE_DEFS} user
 
 %install
 %{__rm} -rf %{buildroot}
+
+%define MAKE_DEFS %{_MAKE_DEFS} DESTDIR=%{buildroot}
 
 %{make} %{MAKE_DEFS} user_install
 %{__mkdir_p} %{buildroot}%{_initrddir}
@@ -113,6 +116,9 @@ This package contains static libraries for lm_sensors.
   (or i2c-viapro + another sensor)
 EOF
 
+%clean
+%{__rm} -rf %{buildroot}
+
 %post -n %{lib_name} -p /sbin/ldconfig
 
 %postun -n %{lib_name} -p /sbin/ldconfig
@@ -122,9 +128,6 @@ EOF
 
 %preun
 %_preun_service lm_sensors
-
-%clean
-%{__rm} -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
