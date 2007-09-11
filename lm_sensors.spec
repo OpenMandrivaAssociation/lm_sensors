@@ -6,7 +6,7 @@
 Summary:        Utilities for lm_sensors
 Name:           lm_sensors
 Version:        2.10.4
-Release:        %mkrel 1
+Release:        %mkrel 2
 License:        GPL
 Group:          System/Kernel and hardware
 URL:            http://www.lm-sensors.nu/
