@@ -1,12 +1,12 @@
 %define lib_name_orig   lib%{name}
 %define lib_major       3
 %define lib_name        %mklibname %{name} %{lib_major}
-%define kversion        2.6.17
+%define kversion        2.6.22
 
 Summary:        Utilities for lm_sensors
 Name:           lm_sensors
-Version:        2.10.4
-Release:        %mkrel 2
+Version:        2.10.5
+Release:        %mkrel 1
 License:        GPL
 Group:          System/Kernel and hardware
 URL:            http://www.lm-sensors.nu/
