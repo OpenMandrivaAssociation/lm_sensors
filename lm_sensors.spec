@@ -1,19 +1,19 @@
-%define lib_name_orig   lib%{name}
-%define lib_major       3
-%define lib_name        %mklibname %{name} %{lib_major}
-%define kversion        2.6.22
+%define lib_name_orig         lib%{name}
+%define lib_major             4
+%define lib_name              %{mklibname %{name} %{lib_major}}
+%define lib_name_devel        %{mklibname %{name} -d}
+%define lib_name_static_devel %{mklibname %{name} -d -s}
 
 Summary:        Utilities for lm_sensors
 Name:           lm_sensors
-Version:        2.10.5
+Version:        3.0.0
 Release:        %mkrel 1
 License:        GPL
 Group:          System/Kernel and hardware
 URL:            http://www.lm-sensors.nu/
-Source0:        ftp://ftp.netroedge.com/pub/lm-sensors/lm_sensors-%{version}.tar.gz
-Source1:        ftp://ftp.netroedge.com/pub/lm-sensors/lm_sensors-%{version}.tar.gz.asc
+Source0:        http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-%{version}.tar.bz2
+Source1:        http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-%{version}.tar.bz2.sig
 Source2:        lm_sensors-2.8.2-sensors
-Patch0:         lm_sensors-2.9.1-misleading_error_message.patch
 Provides:       lm_utils = %{version}-%{release}
 Obsoletes:      lm_utils < %{version}-%{release}
 Requires:       perl
@@ -49,36 +49,46 @@ Provides:       %{lib_name} = %{version}-%{release}
 %description -n %{lib_name}
 Libraries to access lm_sensors internal data.
 
-%package -n %{lib_name}-devel
+%package -n %{lib_name_devel}
 Summary:        Development libraries and header files for lm_sensors
 Group:          Development/C
 Requires(pre): %{lib_name} = %{version}-%{release}
 Requires(postun): %{lib_name} = %{version}-%{release}
-Requires:       %{lib_name} = %{version}
+Requires:       %{lib_name} = %{version}-%{release}
 Provides:       %{_lib}%{name}-devel = %{version}-%{release}
-Provides:        %{lib_name_orig}-devel = %{version}-%{release}
+Provides:       %{lib_name_orig}-devel = %{version}-%{release}
 Provides:       %{name}-devel = %{version}-%{release}
 Obsoletes:      %{name}-devel < %{version}-%{release}
+Conflicts:      %{mklibname %{name} 3}-devel
 
-%description -n %{lib_name}-devel
+%description -n %{lib_name_devel}
 Development libraries and header files for lm_sensors.
 
 You might want to use this package while building applications that might
 take advantage of lm_sensors if found.
 
-%package -n %{lib_name}-static-devel
+%package -n %{lib_name_static_devel}
 Summary:        Static libraries for lm_sensors
 Group:          Development/C
-Requires(pre):  %{lib_name}-devel = %{version}-%{release}
-Requires(postun): %{lib_name}-devel = %{version}-%{release}
+Requires(pre):  %{lib_name_devel} = %{version}-%{release}
+Requires(postun): %{lib_name_devel} = %{version}-%{release}
 Provides:       %{lib_name_orig}-static-devel = %{version}-%{release}
+Conflicts:      %{mklibname %{name} 3}-static-devel
 
-%description -n %{lib_name}-static-devel
+%description -n %{lib_name_static_devel}
 This package contains static libraries for lm_sensors.
 
 %prep
 %setup -q
-%patch0 -p0 -b .misleading_error_message
+
+%{__cat} > README.urpmi << EOF
+* To use this package, you'll have to launch "sensors-detect" as root, and answer a few questions.
+  There is no need to modify startup files as shown at the end, all will be done for you.
+
+* A special note for via686a and i2c-viapro: if you don t see the values, you probably have a PCI conflict.
+  It will be corrected in next kernel. Change the %{_sysconfdir}/sysconfig/lm_sensors to use i2c-isa + via686a
+  (or i2c-viapro + another sensor)
+EOF
 
 %build
 %define _MAKE_DEFS COMPILE_KERNEL=0 WARN=1 PREFIX=%{_prefix} LINUX=%{_usrsrc}/linux I2C_HEADERS=%{_usrsrc}/linux/include ETCDIR=%{_sysconfdir} MANDIR=%{_mandir} PROG_EXTRA:=sensord LIBDIR=%{_libdir}
@@ -92,29 +102,17 @@ This package contains static libraries for lm_sensors.
 %define MAKE_DEFS %{_MAKE_DEFS} DESTDIR=%{buildroot}
 
 %{make} %{MAKE_DEFS} user_install
+
 %{__mkdir_p} %{buildroot}%{_initrddir}
 %{__cp} -a %{SOURCE2} %{buildroot}%{_initrddir}/lm_sensors
-%{__rm} %{buildroot}/usr/include/linux/i2c-dev.h
-%{__rm} %{buildroot}/usr/include/linux/sensors.h
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/i2cget
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/i2cset
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/i2cdump
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/sensord
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/i2cdetect
+
 %{_bindir}/chrpath -d %{buildroot}%{_bindir}/sensors
+%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/sensord
+
 %ifnarch ppc
 %{_bindir}/chrpath -d %{buildroot}%{_sbindir}/isadump
 %{_bindir}/chrpath -d %{buildroot}%{_sbindir}/isaset
 %endif
-
-%{__cat} > README.urpmi << EOF
-* To use this package, you'll have to launch "sensors-detect" as root, and ask few questions.
-  No need to modify startup files as shown at the end, all will be done.
-
-* Special note for via686a and i2c-viapro : if you don t see the values, you probably have a PCI conflict.
-  It will be corrected in next kernel. Change the /etc/sysconfig/lm_sensors to use i2c-isa + via686a
-  (or i2c-viapro + another sensor)
-EOF
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -131,15 +129,11 @@ EOF
 
 %files
 %defattr(-,root,root)
-%doc BACKGROUND BUGS CHANGES CONTRIBUTORS INSTALL README TODO doc README.urpmi
-%config(noreplace) %{_sysconfdir}/sensors.conf
+%doc CHANGES CONTRIBUTORS COPYING INSTALL doc/ README.urpmi
+%config(noreplace) %{_sysconfdir}/sensors3.conf
 %attr(0755,root,root) %{_initrddir}/lm_sensors
 %{_bindir}/sensors
-%{_bindir}/ddcmon
-%{_sbindir}/i2cdetect
-%{_sbindir}/i2cdump
-%{_sbindir}/i2cget
-%{_sbindir}/i2cset
+%{_bindir}/sensors-conf-convert
 %ifnarch ppc
 %{_sbindir}/isadump
 %{_sbindir}/isaset
@@ -149,27 +143,20 @@ EOF
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_bindir}/decode-dimms.pl
-%{_bindir}/decode-edid.pl
-%{_bindir}/decode-vaio.pl
-%{_bindir}/decode-xeon.pl
 %{_sbindir}/fancontrol
-%{_sbindir}/fancontrol.pl
 %{_sbindir}/pwmconfig
 
 %files -n %{lib_name}
 %defattr(-,root,root)
 %{_libdir}/libsensors.so.*
 
-%files -n %{lib_name}-devel
+%files -n %{lib_name_devel}
 %defattr(-,root,root)
 %{_libdir}/libsensors.so
 %dir %{_includedir}/sensors
 %{_includedir}/sensors/*
 %{_mandir}/man3/*
 
-%files -n %{lib_name}-static-devel
+%files -n %{lib_name_static_devel}
 %defattr(-,root,root)
 %{_libdir}/libsensors.a
-
-
