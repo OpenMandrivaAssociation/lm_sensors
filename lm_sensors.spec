@@ -7,13 +7,13 @@
 Summary:        Utilities for lm_sensors
 Name:           lm_sensors
 Version:        3.0.0
-Release:        %mkrel 1
+Release:        %mkrel 2
 License:        GPL
 Group:          System/Kernel and hardware
 URL:            http://www.lm-sensors.nu/
 Source0:        http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-%{version}.tar.bz2
 Source1:        http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-%{version}.tar.bz2.sig
-Source2:        lm_sensors-2.8.2-sensors
+Source2:        lm_sensors.init
 Provides:       lm_utils = %{version}-%{release}
 Obsoletes:      lm_utils < %{version}-%{release}
 Requires:       perl
