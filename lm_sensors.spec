@@ -6,7 +6,7 @@
 Summary:        Utilities for lm_sensors
 Name:           lm_sensors
 Version:        2.10.5
-Release:        %mkrel 2
+Release:        %mkrel 3
 Epoch:          1
 License:        GPL
 Group:          System/Kernel and hardware
@@ -55,7 +55,7 @@ Summary:        Development libraries and header files for lm_sensors
 Group:          Development/C
 Requires(pre): %{lib_name} = %{epoch}:%{version}-%{release}
 Requires(postun): %{lib_name} = %{epoch}:%{version}-%{release}
-Requires:       %{lib_name} = %{version}
+Requires:       %{lib_name} = %{epoch}:%{version}-%{release}
 Provides:       %{_lib}%{name}-devel = %{epoch}:%{version}-%{release}
 Provides:        %{lib_name_orig}-devel = %{epoch}:%{version}-%{release}
 Provides:       %{name}-devel = %{epoch}:%{version}-%{release}
