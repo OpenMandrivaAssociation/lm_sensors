@@ -27,6 +27,7 @@ BuildRequires:  flex
 BuildRequires:  kernel-source
 BuildRequires:  librrdtool-devel
 BuildRequires:  libsysfs-devel
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 This package contains a collection of user space tools for general SMBus
