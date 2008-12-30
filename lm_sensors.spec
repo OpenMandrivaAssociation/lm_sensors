@@ -1,32 +1,32 @@
 %define lib_name_orig   lib%{name}
-%define lib_major       3
-%define lib_name        %mklibname %{name} %{lib_major}
+%define major 3
+%define libname %mklibname %{name} %major
 %define kversion        2.6.22
 
-Summary:        Utilities for lm_sensors
-Name:           lm_sensors
-Version:        2.10.8
-Release:        %mkrel 1
-Epoch:          1
-License:        GPL
-Group:          System/Kernel and hardware
-URL:            http://www.lm-sensors.nu/
-Source0:        ftp://ftp.netroedge.com/pub/lm-sensors/lm_sensors-%{version}.tar.gz
-Source1:        ftp://ftp.netroedge.com/pub/lm-sensors/lm_sensors-%{version}.tar.gz.asc
-Source2:        lm_sensors-2.8.2-sensors
-Patch0:         lm_sensors-2.9.1-misleading_error_message.patch
-Provides:       lm_utils = %{epoch}:%{version}-%{release}
-Obsoletes:      lm_utils < %{epoch}:%{version}-%{release}
-Requires:       perl
-Requires(pre):  rpm-helper
-Requires(postun): rpm-helper
-Requires:       %{lib_name} = %{epoch}:%{version}-%{release}
-BuildRequires:  bison
-BuildRequires:  chrpath
-BuildRequires:  flex
-BuildRequires:  kernel-source
-BuildRequires:  librrdtool-devel
-BuildRequires:  libsysfs-devel
+Summary:	Utilities for lm_sensors
+Name:		lm_sensors
+Version:	2.10.8
+Release:	%mkrel 1
+Epoch:		1
+License:	GPLv2+
+Group:		System/Kernel and hardware
+URL:            http://www.lm-sensors.org
+Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.gz
+Source1:	%{SOURCE0}.asc
+Source2:	lm_sensors-2.8.2-sensors
+Patch0:		lm_sensors-2.9.1-misleading_error_message.patch
+Provides:	lm_utils = %{epoch}:%{version}-%{release}
+Obsoletes:	lm_utils < %{epoch}:%{version}-%{release}
+Requires:	%{libname} = %{epoch}:%{version}-%{release}
+BuildRequires:	bison
+BuildRequires:	chrpath
+BuildRequires:	flex
+BuildRequires:	kernel-source
+BuildRequires:	librrdtool-devel
+BuildRequires:	libsysfs-devel
+Requires:	perl
+Requires(pre):	rpm-helper
+Requires(postun):	rpm-helper
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
@@ -42,39 +42,38 @@ These chips read things like chip temperatures, fan rotation speeds and
 voltage levels. There are quite a few different chips which can be used
 by mainboard builders for approximately the same results.
 
-%package -n %{lib_name}
-Summary:        Libraries needed for lm_sensors
-Group:          System/Libraries
-Provides:       %{lib_name} = %{epoch}:%{version}-%{release}
+%package -n %{libname}
+Summary:	Libraries needed for lm_sensors
+Group:		System/Libraries
+Provides:	%{libname} = %{epoch}:%{version}-%{release}
 
-%description -n %{lib_name}
+%description -n %{libname}
 Libraries to access lm_sensors internal data.
 
-%package -n %{lib_name}-devel
-Summary:        Development libraries and header files for lm_sensors
-Group:          Development/C
-Requires(pre): %{lib_name} = %{epoch}:%{version}-%{release}
-Requires(postun): %{lib_name} = %{epoch}:%{version}-%{release}
-Requires:       %{lib_name} = %{epoch}:%{version}-%{release}
-Provides:       %{_lib}%{name}-devel = %{epoch}:%{version}-%{release}
-Provides:        %{lib_name_orig}-devel = %{epoch}:%{version}-%{release}
-Provides:       %{name}-devel = %{epoch}:%{version}-%{release}
-Obsoletes:      %{name}-devel < %{epoch}:%{version}-%{release}
+%package -n %{libname}-devel
+Summary:	Development libraries and header files for lm_sensors
+Group:		Development/C
+Requires(pre):	%{libname} = %{epoch}:%{version}-%{release}
+Requires(postun):	%{libname} = %{epoch}:%{version}-%{release}
+Requires:	%{libname} = %{epoch}:%{version}-%{release}
+Provides:	lib%{name}-devel = %{epoch}:%{version}-%{release}
+Provides:	%{name}-devel = %{epoch}:%{version}-%{release}
+Obsoletes:	%{name}-devel < %{epoch}:%{version}-%{release}
 
-%description -n %{lib_name}-devel
+%description -n %{libname}-devel
 Development libraries and header files for lm_sensors.
 
 You might want to use this package while building applications that might
 take advantage of lm_sensors if found.
 
-%package -n %{lib_name}-static-devel
-Summary:        Static libraries for lm_sensors
-Group:          Development/C
-Requires(pre):  %{lib_name}-devel = %{epoch}:%{version}-%{release}
-Requires(postun): %{lib_name}-devel = %{epoch}:%{version}-%{release}
-Provides:       %{lib_name_orig}-static-devel = %{epoch}:%{version}-%{release}
+%package -n %{libname}-static-devel
+Summary:	Static libraries for lm_sensors
+Group:		Development/C
+Requires(pre):	%{libname}-devel = %{epoch}:%{version}-%{release}
+Requires(postun):	%{libname}-devel = %{epoch}:%{version}-%{release}
+Provides:	lib%{name}-static-devel = %{epoch}:%{version}-%{release}
 
-%description -n %{lib_name}-static-devel
+%description -n %{libname}-static-devel
 This package contains static libraries for lm_sensors.
 
 %prep
@@ -82,8 +81,12 @@ This package contains static libraries for lm_sensors.
 %patch0 -p0 -b .misleading_error_message
 
 %build
+%setup_compile_flags
 %define _MAKE_DEFS COMPILE_KERNEL=0 WARN=1 PREFIX=%{_prefix} LINUX=%{_usrsrc}/linux I2C_HEADERS=%{_usrsrc}/linux/include ETCDIR=%{_sysconfdir} MANDIR=%{_mandir} PROG_EXTRA:=sensord LIBDIR=%{_libdir}
 %define MAKE_DEFS %{_MAKE_DEFS}
+
+# (tpg) get rid of custom ldflags, rpath
+sed -i -e 's/EXLDFLAGS :=.*/EXLDFLAGS :=$(LDFLAGS)/g' Makefile
 
 %{make} %{MAKE_DEFS} user
 
@@ -121,11 +124,11 @@ EOF
 %{__rm} -rf %{buildroot}
 
 %if %mdkversion < 200900
-%post -n %{lib_name} -p /sbin/ldconfig
+%post -n %{libname} -p /sbin/ldconfig
 %endif
 
 %if %mdkversion < 200900
-%postun -n %{lib_name} -p /sbin/ldconfig
+%postun -n %{libname} -p /sbin/ldconfig
 %endif
 
 %post
@@ -136,7 +139,7 @@ EOF
 
 %files
 %defattr(-,root,root)
-%doc BACKGROUND BUGS CHANGES CONTRIBUTORS INSTALL README TODO doc README.urpmi
+%doc BACKGROUND BUGS CHANGES CONTRIBUTORS README TODO doc README.urpmi
 %config(noreplace) %{_sysconfdir}/sensors.conf
 %attr(0755,root,root) %{_initrddir}/lm_sensors
 %{_bindir}/sensors
@@ -162,17 +165,17 @@ EOF
 %{_sbindir}/fancontrol.pl
 %{_sbindir}/pwmconfig
 
-%files -n %{lib_name}
+%files -n %{libname}
 %defattr(-,root,root)
-%{_libdir}/libsensors.so.*
+%{_libdir}/libsensors.so.%{major}*
 
-%files -n %{lib_name}-devel
+%files -n %{libname}-devel
 %defattr(-,root,root)
 %{_libdir}/libsensors.so
 %dir %{_includedir}/sensors
 %{_includedir}/sensors/*
 %{_mandir}/man3/*
 
-%files -n %{lib_name}-static-devel
+%files -n %{libname}-static-devel
 %defattr(-,root,root)
 %{_libdir}/libsensors.a
