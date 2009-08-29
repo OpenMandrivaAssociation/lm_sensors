@@ -11,7 +11,7 @@ License:	GPLv2+
 Group:		System/Kernel and hardware
 URL:            http://www.lm-sensors.org
 Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
-Source1:	%{SOURCE0}.asc
+Source1:	%{SOURCE0}.sig
 Source2:	lm_sensors-2.8.2-sensors
 Requires:	%{libname} = %{epoch}:%{version}-%{release}
 BuildRequires:	bison
