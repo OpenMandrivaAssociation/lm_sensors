@@ -1,22 +1,18 @@
 %define lib_name_orig   lib%{name}
-%define major 3
+%define major 4
 %define libname %mklibname %{name} %major
-%define kversion        2.6.22
 
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
-Version:	2.10.8
+Version:	3.1.1
 Release:	%mkrel 1
 Epoch:		1
 License:	GPLv2+
 Group:		System/Kernel and hardware
 URL:            http://www.lm-sensors.org
-Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.gz
+Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
 Source1:	%{SOURCE0}.asc
 Source2:	lm_sensors-2.8.2-sensors
-Patch0:		lm_sensors-2.9.1-misleading_error_message.patch
-Provides:	lm_utils = %{epoch}:%{version}-%{release}
-Obsoletes:	lm_utils < %{epoch}:%{version}-%{release}
 Requires:	%{libname} = %{epoch}:%{version}-%{release}
 BuildRequires:	bison
 BuildRequires:	chrpath
@@ -78,7 +74,6 @@ This package contains static libraries for lm_sensors.
 
 %prep
 %setup -q
-%patch0 -p0 -b .misleading_error_message
 
 %build
 %setup_compile_flags
@@ -97,14 +92,8 @@ sed -i -e 's/EXLDFLAGS :=.*/EXLDFLAGS :=$(LDFLAGS)/g' Makefile
 
 %{make} %{MAKE_DEFS} user_install
 %{__mkdir_p} %{buildroot}%{_initrddir}
-%{__cp} -a %{SOURCE2} %{buildroot}%{_initrddir}/lm_sensors
-%{__rm} %{buildroot}/usr/include/linux/i2c-dev.h
-%{__rm} %{buildroot}/usr/include/linux/sensors.h
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/i2cget
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/i2cset
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/i2cdump
+install -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/lm_sensors
 %{_bindir}/chrpath -d %{buildroot}%{_sbindir}/sensord
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/i2cdetect
 %{_bindir}/chrpath -d %{buildroot}%{_bindir}/sensors
 %ifnarch ppc
 %{_bindir}/chrpath -d %{buildroot}%{_sbindir}/isadump
@@ -139,15 +128,11 @@ EOF
 
 %files
 %defattr(-,root,root)
-%doc BACKGROUND BUGS CHANGES CONTRIBUTORS README TODO doc README.urpmi
-%config(noreplace) %{_sysconfdir}/sensors.conf
-%attr(0755,root,root) %{_initrddir}/lm_sensors
+%doc CHANGES CONTRIBUTORS README doc README.urpmi
+%config(noreplace) %{_sysconfdir}/sensors3.conf
+%{_initrddir}/lm_sensors
 %{_bindir}/sensors
-%{_bindir}/ddcmon
-%{_sbindir}/i2cdetect
-%{_sbindir}/i2cdump
-%{_sbindir}/i2cget
-%{_sbindir}/i2cset
+%{_bindir}/sensors-conf-convert
 %ifnarch ppc
 %{_sbindir}/isadump
 %{_sbindir}/isaset
@@ -157,12 +142,7 @@ EOF
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_bindir}/decode-dimms.pl
-%{_bindir}/decode-edid.pl
-%{_bindir}/decode-vaio.pl
-%{_bindir}/decode-xeon.pl
 %{_sbindir}/fancontrol
-%{_sbindir}/fancontrol.pl
 %{_sbindir}/pwmconfig
 
 %files -n %{libname}
