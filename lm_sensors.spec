@@ -94,7 +94,7 @@ sed -i -e 's/EXLDFLAGS :=.*/EXLDFLAGS :=$(LDFLAGS)/g' Makefile
 install -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/lm_sensors
 %{_bindir}/chrpath -d %{buildroot}%{_sbindir}/sensord
 %{_bindir}/chrpath -d %{buildroot}%{_bindir}/sensors
-%ifnarch ppc
+%ifnarch ppc %arm %mips
 %{_bindir}/chrpath -d %{buildroot}%{_sbindir}/isadump
 %{_bindir}/chrpath -d %{buildroot}%{_sbindir}/isaset
 %endif
@@ -132,7 +132,7 @@ EOF
 %{_initrddir}/lm_sensors
 %{_bindir}/sensors
 %{_bindir}/sensors-conf-convert
-%ifnarch ppc
+%ifnarch ppc %arm %mips
 %{_sbindir}/isadump
 %{_sbindir}/isaset
 %endif
