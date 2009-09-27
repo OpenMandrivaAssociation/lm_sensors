@@ -17,7 +17,6 @@ Requires:	%{libname} = %{epoch}:%{version}-%{release}
 BuildRequires:	bison
 BuildRequires:	chrpath
 BuildRequires:	flex
-BuildRequires:	kernel-source
 BuildRequires:	librrdtool-devel
 BuildRequires:	libsysfs-devel
 Requires:	perl
