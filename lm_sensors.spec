@@ -4,8 +4,8 @@
 
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
-Version:	3.1.1
-Release:	%mkrel 2
+Version:	3.1.2
+Release:	%mkrel 1
 Epoch:		1
 License:	GPLv2+
 Group:		System/Kernel and hardware
@@ -19,10 +19,9 @@ BuildRequires:	chrpath
 BuildRequires:	flex
 BuildRequires:	librrdtool-devel
 BuildRequires:	libsysfs-devel
-Requires:	perl
 Requires(pre):	rpm-helper
 Requires(postun):	rpm-helper
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRoot:      %{_tmppath}/%{name}-%{version}
 
 %description
 This package contains a collection of user space tools for general SMBus
