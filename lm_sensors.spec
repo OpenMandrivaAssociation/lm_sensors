@@ -1,11 +1,13 @@
 %define lib_name_orig   lib%{name}
 %define major 4
 %define libname %mklibname %{name} %major
+%define develname %mklibname %{name} -d
+%define staticname %mklibname %{name} -d -s
 
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.1.2
-Release:	%mkrel 1
+Release:	%mkrel 2
 Epoch:		1
 License:	GPLv2+
 Group:		System/Kernel and hardware
@@ -44,7 +46,7 @@ Provides:	%{libname} = %{epoch}:%{version}-%{release}
 %description -n %{libname}
 Libraries to access lm_sensors internal data.
 
-%package -n %{libname}-devel
+%package -n %{develname}
 Summary:	Development libraries and header files for lm_sensors
 Group:		Development/C
 Requires(pre):	%{libname} = %{epoch}:%{version}-%{release}
@@ -54,20 +56,21 @@ Provides:	lib%{name}-devel = %{epoch}:%{version}-%{release}
 Provides:	%{name}-devel = %{epoch}:%{version}-%{release}
 Obsoletes:	%{name}-devel < %{epoch}:%{version}-%{release}
 
-%description -n %{libname}-devel
+%description -n %{develname}
 Development libraries and header files for lm_sensors.
 
 You might want to use this package while building applications that might
 take advantage of lm_sensors if found.
 
-%package -n %{libname}-static-devel
+%package -n %{staticname}
 Summary:	Static libraries for lm_sensors
 Group:		Development/C
 Requires(pre):	%{libname}-devel = %{epoch}:%{version}-%{release}
 Requires(postun):	%{libname}-devel = %{epoch}:%{version}-%{release}
 Provides:	lib%{name}-static-devel = %{epoch}:%{version}-%{release}
+Obsoletes:	%{name}-static-devel < %{epoch}:%{version}-%{release}
 
-%description -n %{libname}-static-devel
+%description -n %{staticname}
 This package contains static libraries for lm_sensors.
 
 %prep
@@ -147,13 +150,13 @@ EOF
 %defattr(-,root,root)
 %{_libdir}/libsensors.so.%{major}*
 
-%files -n %{libname}-devel
+%files -n %{develname}
 %defattr(-,root,root)
 %{_libdir}/libsensors.so
 %dir %{_includedir}/sensors
 %{_includedir}/sensors/*
 %{_mandir}/man3/*
 
-%files -n %{libname}-static-devel
+%files -n %{staticname}
 %defattr(-,root,root)
 %{_libdir}/libsensors.a
