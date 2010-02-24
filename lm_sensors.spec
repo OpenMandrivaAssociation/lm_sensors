@@ -7,7 +7,7 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.1.2
-Release:	%mkrel 2
+Release:	%mkrel 3
 Epoch:		1
 License:	GPLv2+
 Group:		System/Kernel and hardware
@@ -65,8 +65,8 @@ take advantage of lm_sensors if found.
 %package -n %{staticname}
 Summary:	Static libraries for lm_sensors
 Group:		Development/C
-Requires(pre):	%{libname}-devel = %{epoch}:%{version}-%{release}
-Requires(postun):	%{libname}-devel = %{epoch}:%{version}-%{release}
+Requires(pre):	%{develname} = %{epoch}:%{version}-%{release}
+Requires(postun):	%{develname} = %{epoch}:%{version}-%{release}
 Provides:	lib%{name}-static-devel = %{epoch}:%{version}-%{release}
 Obsoletes:	%{name}-static-devel < %{epoch}:%{version}-%{release}
 
