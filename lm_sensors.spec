@@ -6,12 +6,12 @@
 
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
-Version:	3.1.2
-Release:	%mkrel 3
+Version:	3.2.0
+Release:	%mkrel 1
 Epoch:		1
 License:	GPLv2+
 Group:		System/Kernel and hardware
-URL:            http://www.lm-sensors.org
+URL:        http://www.lm-sensors.org
 Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
 Source1:	%{SOURCE0}.sig
 Source2:	lm_sensors-2.8.2-sensors
