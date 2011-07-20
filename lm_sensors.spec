@@ -7,7 +7,7 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.3.0
-Release:	%mkrel 3
+Release:	%mkrel 4
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
@@ -93,8 +93,7 @@ mkdir -p $RPM_BUILD_ROOT%{_initrddir}
 mkdir -p $RPM_BUILD_ROOT/lib/systemd/system
 install -p -m 644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/lm_sensors
 install -p -m 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/sensord
-install -p -m 755 %{SOURCE3} $RPM_BUILD_ROOT%{_initrddir}/sensord
-ln -s $RPM_BUILD_ROOT%{_initrddir}/sensord $RPM_BUILD_ROOT%{_initrddir}/lm_sensors
+install -p -m 755 %{SOURCE3} $RPM_BUILD_ROOT%{_initrddir}/lm_sensors
 install -p -m 644 prog/init/lm_sensors.service \
     $RPM_BUILD_ROOT/lib/systemd/system
 
@@ -113,10 +112,10 @@ if [ $1 -eq 0 ] ; then
     /bin/systemctl --no-reload disable lm_sensors.service > /dev/null 2>&1 || :
 fi
 
-%_preun_service sensord
+%_preun_service lm_sensors
 
 %post
-%_post_service sensord
+%_post_service lm_sensors
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -125,7 +124,6 @@ fi
 %defattr(-,root,root)
 %doc CHANGES CONTRIBUTORS README doc
 %config(noreplace) %{_sysconfdir}/sensors3.conf
-%{_initrddir}/sensord
 %{_initrddir}/lm_sensors
 %config(noreplace) %{_sysconfdir}/sysconfig/sensord
 %config(noreplace) %{_sysconfdir}/sysconfig/lm_sensors
