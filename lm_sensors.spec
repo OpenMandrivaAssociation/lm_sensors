@@ -7,14 +7,17 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.3.0
-Release:	%mkrel 2
+Release:	%mkrel 3
 Epoch:		1
-License:	GPLv2+
+License:	LGPLv2+
 Group:		System/Kernel and hardware
 URL:		http://www.lm-sensors.org
 Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
-Source1:	%{SOURCE0}.sig
-Source2:	lm_sensors-2.8.2-sensors
+Source1: lm_sensors.sysconfig
+# these 2 were taken from PLD-linux, Thanks!
+Source2: sensord.sysconfig
+Source3: sensord.init
+Patch0: lm_sensors-3.3.0-systemd.patch
 Requires:	%{libname} = %{epoch}:%{version}-%{release}
 BuildRequires:	bison
 BuildRequires:	chrpath
@@ -23,6 +26,10 @@ BuildRequires:	librrdtool-devel
 BuildRequires:	libsysfs-devel
 Requires(pre):	rpm-helper
 Requires(postun):	rpm-helper
+Requires(post): systemd-units
+%ifarch %{ix86} x86_64
+Requires: /usr/sbin/dmidecode
+%endif
 BuildRoot:      %{_tmppath}/%{name}-%{version}
 
 %description
@@ -62,44 +69,54 @@ Development libraries and header files for lm_sensors.
 You might want to use this package while building applications that might
 take advantage of lm_sensors if found.
 
-%package -n %{staticname}
-Summary:	Static libraries for lm_sensors
-Group:		Development/C
-Requires(pre):	%{develname} = %{epoch}:%{version}-%{release}
-Requires(postun):	%{develname} = %{epoch}:%{version}-%{release}
-Provides:	lib%{name}-static-devel = %{epoch}:%{version}-%{release}
-Obsoletes:	%{name}-static-devel < %{epoch}:%{version}-%{release}
-
-%description -n %{staticname}
-This package contains static libraries for lm_sensors.
-
 %prep
 %setup -q
+%patch0 -p0
+
 
 %build
-%setup_compile_flags
-%define _MAKE_DEFS COMPILE_KERNEL=0 WARN=1 PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} MANDIR=%{_mandir} PROG_EXTRA:=sensord LIBDIR=%{_libdir}
-%define MAKE_DEFS %{_MAKE_DEFS}
+export CFLAGS="%{optflags}"
+make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS= \
+  PROG_EXTRA=sensord user
 
-# (tpg) get rid of custom ldflags, rpath
-sed -i -e 's/EXLDFLAGS :=.*/EXLDFLAGS :=$(LDFLAGS)/g' Makefile
-
-%{make} %{MAKE_DEFS} user
 
 %install
-%{__rm} -rf %{buildroot}
+make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
+  DESTDIR=$RPM_BUILD_ROOT user_install
+rm $RPM_BUILD_ROOT%{_libdir}/libsensors.a
 
-%define MAKE_DEFS %{_MAKE_DEFS} DESTDIR=%{buildroot}
+ln -s sensors.conf.5.gz $RPM_BUILD_ROOT%{_mandir}/man5/sensors3.conf.5.gz
 
-%{make} %{MAKE_DEFS} user_install
-%{__mkdir_p} %{buildroot}%{_initrddir}
-install -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/lm_sensors
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/sensord
-%{_bindir}/chrpath -d %{buildroot}%{_bindir}/sensors
-%ifnarch ppc %arm %mips
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/isadump
-%{_bindir}/chrpath -d %{buildroot}%{_sbindir}/isaset
-%endif
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/sensors.d
+mkdir -p $RPM_BUILD_ROOT%{_initrddir}
+mkdir -p $RPM_BUILD_ROOT/lib/systemd/system
+install -p -m 644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/lm_sensors
+install -p -m 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/sensord
+install -p -m 755 %{SOURCE3} $RPM_BUILD_ROOT%{_initrddir}/sensord
+ln -s $RPM_BUILD_ROOT%{_initrddir}/sensord $RPM_BUILD_ROOT%{_initrddir}/lm_sensors
+install -p -m 644 prog/init/lm_sensors.service \
+    $RPM_BUILD_ROOT/lib/systemd/system
+
+
+# Note non standard systemd scriptlets, since reload / stop makes no sense
+# for lm_sensors
+%triggerun -- lm_sensors < 3.3.0-2
+if [ -L /etc/rc3.d/S26lm_sensors ]; then
+    /bin/systemctl enable lm_sensors.service >/dev/null 2>&1 || :
+fi
+/sbin/chkconfig --del lm_sensors
+
+%preun
+if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    /bin/systemctl --no-reload disable lm_sensors.service > /dev/null 2>&1 || :
+fi
+
+%_preun_service sensord
+
+%post
+%_post_service sensord
 
 %{__cat} > README.urpmi << EOF
 * To use this package, you'll have to launch "sensors-detect" as root, and ask few questions.
@@ -113,25 +130,14 @@ EOF
 %clean
 %{__rm} -rf %{buildroot}
 
-%if %mdkversion < 200900
-%post -n %{libname} -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n %{libname} -p /sbin/ldconfig
-%endif
-
-%post
-%_post_service lm_sensors
-
-%preun
-%_preun_service lm_sensors
-
 %files
 %defattr(-,root,root)
 %doc CHANGES CONTRIBUTORS README doc README.urpmi
 %config(noreplace) %{_sysconfdir}/sensors3.conf
+%{_initrddir}/sensord
 %{_initrddir}/lm_sensors
+%config(noreplace) %{_sysconfdir}/sysconfig/sensord
+%config(noreplace) %{_sysconfdir}/sysconfig/lm_sensors
 %{_bindir}/sensors
 %{_bindir}/sensors-conf-convert
 %ifnarch ppc %arm %mips
@@ -145,6 +151,7 @@ EOF
 %{_mandir}/man8/*
 %{_sbindir}/fancontrol
 %{_sbindir}/pwmconfig
+/lib/systemd/system/lm_sensors.service
 
 %files -n %{libname}
 %defattr(-,root,root)
@@ -156,7 +163,3 @@ EOF
 %dir %{_includedir}/sensors
 %{_includedir}/sensors/*
 %{_mandir}/man3/*
-
-%files -n %{staticname}
-%defattr(-,root,root)
-%{_libdir}/libsensors.a
