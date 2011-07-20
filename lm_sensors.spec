@@ -118,21 +118,12 @@ fi
 %post
 %_post_service sensord
 
-%{__cat} > README.urpmi << EOF
-* To use this package, you'll have to launch "sensors-detect" as root, and ask few questions.
-  No need to modify startup files as shown at the end, all will be done.
-
-* Special note for via686a and i2c-viapro : if you don t see the values, you probably have a PCI conflict.
-  It will be corrected in next kernel. Change the /etc/sysconfig/lm_sensors to use i2c-isa + via686a
-  (or i2c-viapro + another sensor)
-EOF
-
 %clean
 %{__rm} -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%doc CHANGES CONTRIBUTORS README doc README.urpmi
+%doc CHANGES CONTRIBUTORS README doc
 %config(noreplace) %{_sysconfdir}/sensors3.conf
 %{_initrddir}/sensord
 %{_initrddir}/lm_sensors
