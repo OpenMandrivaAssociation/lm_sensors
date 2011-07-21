@@ -7,7 +7,7 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.3.0
-Release:	%mkrel 4
+Release:	%mkrel 5
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
@@ -28,7 +28,7 @@ Requires(pre):	rpm-helper
 Requires(postun):	rpm-helper
 Requires(post): systemd-units
 %ifarch %{ix86} x86_64
-Requires: /usr/sbin/dmidecode
+Requires: dmidecode
 %endif
 BuildRoot:      %{_tmppath}/%{name}-%{version}
 
