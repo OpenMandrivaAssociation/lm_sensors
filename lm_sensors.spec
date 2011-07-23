@@ -6,8 +6,8 @@
 
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
-Version:	3.3.0
-Release:	%mkrel 5
+Version:	3.3.1
+Release:	%mkrel 1
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
@@ -17,7 +17,6 @@ Source1: lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2: sensord.sysconfig
 Source3: sensord.init
-Patch0: lm_sensors-3.3.0-systemd.patch
 Requires:	%{libname} = %{epoch}:%{version}-%{release}
 BuildRequires:	bison
 BuildRequires:	chrpath
@@ -71,31 +70,32 @@ take advantage of lm_sensors if found.
 
 %prep
 %setup -q
-%patch0 -p0
 
 
 %build
 export CFLAGS="%{optflags}"
-make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS= \
+export CPPFLAGS="$CFLAGS"
+
+make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
   PROG_EXTRA=sensord user
 
 
 %install
 make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
-  DESTDIR=$RPM_BUILD_ROOT user_install
-rm $RPM_BUILD_ROOT%{_libdir}/libsensors.a
+  DESTDIR=%{buildroot} user_install
+rm %{buildroot}%{_libdir}/libsensors.a
 
-ln -s sensors.conf.5.gz $RPM_BUILD_ROOT%{_mandir}/man5/sensors3.conf.5.gz
+ln -s sensors.conf.5.gz %{buildroot}%{_mandir}/man5/sensors3.conf.5.gz
 
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/sensors.d
-mkdir -p $RPM_BUILD_ROOT%{_initrddir}
-mkdir -p $RPM_BUILD_ROOT/lib/systemd/system
-install -p -m 644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/lm_sensors
-install -p -m 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/sensord
-install -p -m 755 %{SOURCE3} $RPM_BUILD_ROOT%{_initrddir}/lm_sensors
+mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
+mkdir -p %{buildroot}%{_sysconfdir}/sensors.d
+mkdir -p %{buildroot}%{_initrddir}
+mkdir -p %{buildroot}/lib/systemd/system
+install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/lm_sensors
+install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/sensord
+install -p -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/lm_sensors
 install -p -m 644 prog/init/lm_sensors.service \
-    $RPM_BUILD_ROOT/lib/systemd/system
+    %{buildroot}/lib/systemd/system
 
 
 # Note non standard systemd scriptlets, since reload / stop makes no sense
