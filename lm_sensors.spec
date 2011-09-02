@@ -7,7 +7,7 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.3.1
-Release:	%mkrel 3
+Release:	%mkrel 4
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
@@ -17,6 +17,7 @@ Source1: lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2: sensord.sysconfig
 Source3: sensord.init
+Patch01:	lm_sensors-cpuid.patch
 Requires:	%{libname} = %{epoch}:%{version}-%{release}
 BuildRequires:	bison
 BuildRequires:	chrpath
@@ -70,6 +71,7 @@ take advantage of lm_sensors if found.
 
 %prep
 %setup -q
+%apply_patches
 
 
 %build
