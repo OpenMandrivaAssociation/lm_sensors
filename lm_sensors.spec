@@ -7,7 +7,7 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.3.1
-Release:	%mkrel 1
+Release:	%mkrel 3
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
@@ -93,9 +93,18 @@ mkdir -p %{buildroot}%{_initrddir}
 mkdir -p %{buildroot}/lib/systemd/system
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/lm_sensors
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/sensord
-install -p -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/lm_sensors
+install -p -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/sensord
 install -p -m 644 prog/init/lm_sensors.service \
     %{buildroot}/lib/systemd/system
+
+%{__cat} > README.urpmi << EOF
+* To use this package, you'll have to launch "sensors-detect" as root, and ask few questions.
+  No need to modify startup files as shown at the end, all will be done.
+
+* Special note for via686a and i2c-viapro : if you don t see the values, you probably have a PCI conflict.
+  It will be corrected in next kernel. Change the /etc/sysconfig/lm_sensors to use i2c-isa + via686a
+  (or i2c-viapro + another sensor)
+EOF
 
 
 # Note non standard systemd scriptlets, since reload / stop makes no sense
@@ -122,9 +131,9 @@ fi
 
 %files
 %defattr(-,root,root)
-%doc CHANGES CONTRIBUTORS README doc
+%doc CHANGES CONTRIBUTORS README doc README.urpmi
 %config(noreplace) %{_sysconfdir}/sensors3.conf
-%{_initrddir}/lm_sensors
+%{_initrddir}/sensord
 %config(noreplace) %{_sysconfdir}/sysconfig/sensord
 %config(noreplace) %{_sysconfdir}/sysconfig/lm_sensors
 %{_bindir}/sensors
