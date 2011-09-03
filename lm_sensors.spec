@@ -7,7 +7,7 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.3.1
-Release:	%mkrel 6
+Release:	%mkrel 8
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
