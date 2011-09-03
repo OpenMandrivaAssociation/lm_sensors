@@ -7,7 +7,7 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.3.1
-Release:	%mkrel 4
+Release:	%mkrel 6
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
@@ -95,7 +95,7 @@ mkdir -p %{buildroot}%{_initrddir}
 mkdir -p %{buildroot}/lib/systemd/system
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/lm_sensors
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/sensord
-install -p -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/sensord
+install -p -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/lm_sensors
 install -p -m 644 prog/init/lm_sensors.service \
     %{buildroot}/lib/systemd/system
 
@@ -117,6 +117,10 @@ if [ -L /etc/rc3.d/S26lm_sensors ]; then
 fi
 /sbin/chkconfig --del lm_sensors
 
+#fix mistake with sensord instead lm_sensors in /etc/init.d
+%triggerrun -- lm_sensors = 3.3.1-5
+/sbin/chkconfig --del sensord
+
 %preun
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
@@ -135,7 +139,7 @@ fi
 %defattr(-,root,root)
 %doc CHANGES CONTRIBUTORS README doc README.urpmi
 %config(noreplace) %{_sysconfdir}/sensors3.conf
-%{_initrddir}/sensord
+%{_initrddir}/lm_sensors
 %config(noreplace) %{_sysconfdir}/sysconfig/sensord
 %config(noreplace) %{_sysconfdir}/sysconfig/lm_sensors
 %{_bindir}/sensors
