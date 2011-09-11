@@ -7,7 +7,7 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.3.1
-Release:	%mkrel 8
+Release:	%mkrel 9
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
@@ -16,7 +16,6 @@ Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
 Source1: lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2: sensord.sysconfig
-Source3: sensord.init
 Patch01:	lm_sensors-cpuid.patch
 Requires:	%{libname} = %{epoch}:%{version}-%{release}
 BuildRequires:	bison
@@ -95,7 +94,8 @@ mkdir -p %{buildroot}%{_initrddir}
 mkdir -p %{buildroot}/lib/systemd/system
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/lm_sensors
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/sensord
-install -p -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/lm_sensors
+install -p -m 755 prog/init/lm_sensors.init %{buildroot}%{_initrddir}/lm_sensors
+install -p -m 755 prog/init/fancontrol.init %{buildroot}%{_initrddir}/fancontrol
 install -p -m 644 prog/init/lm_sensors.service \
     %{buildroot}/lib/systemd/system
 
@@ -140,6 +140,7 @@ fi
 %doc CHANGES CONTRIBUTORS README doc README.urpmi
 %config(noreplace) %{_sysconfdir}/sensors3.conf
 %{_initrddir}/lm_sensors
+%{_initrddir}/fancontrol
 %config(noreplace) %{_sysconfdir}/sysconfig/sensord
 %config(noreplace) %{_sysconfdir}/sysconfig/lm_sensors
 %{_bindir}/sensors
