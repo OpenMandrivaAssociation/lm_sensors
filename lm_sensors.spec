@@ -127,10 +127,10 @@ if [ $1 -eq 0 ] ; then
     /bin/systemctl --no-reload disable lm_sensors.service > /dev/null 2>&1 || :
 fi
 
-%_preun_service lm_sensors
+/bin/systemctl disable --quiet lm_sensors.service
 
 %post
-%_post_service lm_sensors
+/bin/systemctl enable --quiet lm_sensors.service
 
 %clean
 %{__rm} -rf %{buildroot}
