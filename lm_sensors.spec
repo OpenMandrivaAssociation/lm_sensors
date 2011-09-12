@@ -7,7 +7,7 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.3.1
-Release:	%mkrel 9
+Release:	%mkrel 10
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
@@ -76,8 +76,9 @@ take advantage of lm_sensors if found.
 %build
 export CFLAGS="%{optflags}"
 export CPPFLAGS="$CFLAGS"
+export EXLDFLAGS="%{ldflags}"
 
-make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
+%make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
   PROG_EXTRA=sensord user
 
 
