@@ -5,8 +5,8 @@
 
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
-Version:	3.3.1
-Release:	%mkrel 11
+Version:	3.3.2
+Release:	1
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
@@ -15,7 +15,6 @@ Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
 Source1: lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2: sensord.sysconfig
-Patch01:	lm_sensors-cpuid.patch
 BuildRequires:	bison
 BuildRequires:	chrpath
 BuildRequires:	flex
@@ -66,12 +65,9 @@ take advantage of lm_sensors if found.
 #--------------------------------------------------------------------
 %prep
 %setup -q
-%apply_patches
-
 
 %build
-export CFLAGS="%{optflags}"
-export CPPFLAGS="$CFLAGS"
+%setup_compile_flags
 
 %make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
   PROG_EXTRA=sensord user
