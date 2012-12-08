@@ -1,4 +1,3 @@
 sources:
-  "lm_sensors-3.3.2.tar.bz2:"	5d0f026ad763124e8c2ad733b6e1ad5e6473993d
-  "lm_sensors.sysconfig:"	c27ae43795d152a7fc7503c7109288e3fdc2207c
-  "sensord.sysconfig:"	04aab0fad53446138d93fc7acae763568a96f21b
+  "lm_sensors-3.3.2.tar.bz2": 5d0f026ad763124e8c2ad733b6e1ad5e6473993d
+  lm_sensors-3.3.3.tar.bz2: b55c06f425993e42f13553f204066c446da36fd3

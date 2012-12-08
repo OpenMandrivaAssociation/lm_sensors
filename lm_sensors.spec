@@ -1,27 +1,27 @@
 %define major 4
-%define libname %mklibname %{name} %major
+%define libname %mklibname %{name} %{major}
 %define develname %mklibname %{name} -d
 %define staticname %mklibname %{name} -d -s
 
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
-Version:	3.3.2
+Version:	3.3.3
 Release:	1
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 URL:		http://www.lm-sensors.org
 Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
-Source1: lm_sensors.sysconfig
+Source1:	lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
-Source2: sensord.sysconfig
+Source2:	sensord.sysconfig
 BuildRequires:	bison
 BuildRequires:	chrpath
 BuildRequires:	flex
 BuildRequires:	librrdtool-devel
-BuildRequires:	libsysfs-devel
+BuildRequires:	sysfsutils-devel
 Requires(preun):systemd-units
-Requires(post): systemd-units
+Requires(post):	systemd-units
 %ifarch %{ix86} x86_64
 Requires:	dmidecode
 %endif
@@ -53,7 +53,6 @@ Summary:	Development libraries and header files for lm_sensors
 Group:		Development/C
 Requires:	%{libname} = %{epoch}:%{version}-%{release}
 Provides:	lib%{name}-devel = %{epoch}:%{version}-%{release}
-Obsoletes:	%{name}-devel < %{epoch}:%{version}-%{release}
 Provides:	%{name}-devel = %{epoch}:%{version}-%{release}
 
 %description -n %{develname}
