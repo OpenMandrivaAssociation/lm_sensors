@@ -6,12 +6,12 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Version:	3.3.3
-Release:	1
+Release:	2
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 URL:		http://www.lm-sensors.org
-Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
+Source0:http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
 Source1:	lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2:	sensord.sysconfig
@@ -20,7 +20,7 @@ BuildRequires:	chrpath
 BuildRequires:	flex
 BuildRequires:	librrdtool-devel
 BuildRequires:	sysfsutils-devel
-Requires(preun):systemd-units
+Requires(preun):	systemd-units
 Requires(post):	systemd-units
 %ifarch %{ix86} x86_64
 Requires:	dmidecode
@@ -81,13 +81,12 @@ ln -s sensors.conf.5.gz %{buildroot}%{_mandir}/man5/sensors3.conf.5.gz
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 mkdir -p %{buildroot}%{_sysconfdir}/sensors.d
 mkdir -p %{buildroot}%{_initrddir}
-mkdir -p %{buildroot}/lib/systemd/system
+mkdir -p %{buildroot}%{_unitdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/lm_sensors
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/sensord
 install -p -m 755 prog/init/lm_sensors.init %{buildroot}%{_initrddir}/lm_sensors
 install -p -m 755 prog/init/fancontrol.init %{buildroot}%{_initrddir}/fancontrol
-install -p -m 644 prog/init/lm_sensors.service \
-    %{buildroot}/lib/systemd/system
+install -p -m 644 prog/init/lm_sensors.service %{buildroot}%{_unitdir}
 
 %{__cat} > README.urpmi << EOF
 * To use this package, you'll have to launch "sensors-detect" as root, and ask few questions.
@@ -142,7 +141,7 @@ fi
 %{_mandir}/man8/*
 %{_sbindir}/fancontrol
 %{_sbindir}/pwmconfig
-/lib/systemd/system/lm_sensors.service
+%{_unitdir}/lm_sensors.service
 
 %files -n %{libname}
 %{_libdir}/libsensors.so.%{major}*
