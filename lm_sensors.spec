@@ -5,8 +5,8 @@
 
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
-Version:	3.3.3
-Release:	2
+Version:	3.3.4
+Release:	1
 Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
@@ -18,7 +18,7 @@ Source2:	sensord.sysconfig
 BuildRequires:	bison
 BuildRequires:	chrpath
 BuildRequires:	flex
-BuildRequires:	librrdtool-devel
+BuildRequires:	pkgconfig(librrd)
 BuildRequires:	sysfsutils-devel
 Requires(preun):	systemd-units
 Requires(post):	systemd-units
