@@ -1,27 +1,25 @@
 %define major 4
 %define libname %mklibname %{name} %{major}
-%define develname %mklibname %{name} -d
-%define staticname %mklibname %{name} -d -s
+%define devname %mklibname %{name} -d
 
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
+Epoch:		1
 Version:	3.3.4
 Release:	1
-Epoch:		1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
-URL:		http://www.lm-sensors.org
-Source0:http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
+Url:		http://www.lm-sensors.org
+Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
 Source1:	lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2:	sensord.sysconfig
 BuildRequires:	bison
 BuildRequires:	chrpath
 BuildRequires:	flex
-BuildRequires:	pkgconfig(librrd)
 BuildRequires:	sysfsutils-devel
-Requires(preun):	systemd-units
-Requires(post):	systemd-units
+BuildRequires:	pkgconfig(librrd)
+Requires(preun,post):	systemd-units
 %ifarch %{ix86} x86_64
 Requires:	dmidecode
 %endif
@@ -39,7 +37,6 @@ These chips read things like chip temperatures, fan rotation speeds and
 voltage levels. There are quite a few different chips which can be used
 by mainboard builders for approximately the same results.
 
-#--------------------------------------------------------------------
 %package -n %{libname}
 Summary:	Libraries needed for lm_sensors
 Group:		System/Libraries
@@ -47,21 +44,18 @@ Group:		System/Libraries
 %description -n %{libname}
 Libraries to access lm_sensors internal data.
 
-#--------------------------------------------------------------------
-%package -n %{develname}
+%package -n %{devname}
 Summary:	Development libraries and header files for lm_sensors
 Group:		Development/C
 Requires:	%{libname} = %{epoch}:%{version}-%{release}
-Provides:	lib%{name}-devel = %{epoch}:%{version}-%{release}
 Provides:	%{name}-devel = %{epoch}:%{version}-%{release}
 
-%description -n %{develname}
+%description -n %{devname}
 Development libraries and header files for lm_sensors.
 
 You might want to use this package while building applications that might
 take advantage of lm_sensors if found.
 
-#--------------------------------------------------------------------
 %prep
 %setup -q
 
@@ -69,11 +63,11 @@ take advantage of lm_sensors if found.
 %setup_compile_flags
 
 %make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
-  PROG_EXTRA=sensord user
+	PROG_EXTRA=sensord user
 
 %install
 make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
-  DESTDIR=%{buildroot} user_install
+	DESTDIR=%{buildroot} user_install
 rm %{buildroot}%{_libdir}/libsensors.a
 
 ln -s sensors.conf.5.gz %{buildroot}%{_mandir}/man5/sensors3.conf.5.gz
@@ -88,15 +82,14 @@ install -p -m 755 prog/init/lm_sensors.init %{buildroot}%{_initrddir}/lm_sensors
 install -p -m 755 prog/init/fancontrol.init %{buildroot}%{_initrddir}/fancontrol
 install -p -m 644 prog/init/lm_sensors.service %{buildroot}%{_unitdir}
 
-%{__cat} > README.urpmi << EOF
-* To use this package, you'll have to launch "sensors-detect" as root, and ask few questions.
+cat > README.urpmi << EOF
+* To use this package, you will have to launch "sensors-detect" as root, and ask few questions.
   No need to modify startup files as shown at the end, all will be done.
 
-* Special note for via686a and i2c-viapro : if you don t see the values, you probably have a PCI conflict.
+* Special note for via686a and i2c-viapro :	if you don t see the values, you probably have a PCI conflict.
   It will be corrected in next kernel. Change the /etc/sysconfig/lm_sensors to use i2c-isa + via686a
   (or i2c-viapro + another sensor)
 EOF
-
 
 # Note non standard systemd scriptlets, since reload / stop makes no sense
 # for lm_sensors
@@ -146,8 +139,9 @@ fi
 %files -n %{libname}
 %{_libdir}/libsensors.so.%{major}*
 
-%files -n %{develname}
+%files -n %{devname}
 %{_libdir}/libsensors.so
 %dir %{_includedir}/sensors
 %{_includedir}/sensors/*
 %{_mandir}/man3/*
+
