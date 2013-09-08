@@ -6,7 +6,7 @@ Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Epoch:		1
 Version:	3.3.4
-Release:	1
+Release:	2
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lm-sensors.org
@@ -19,7 +19,8 @@ BuildRequires:	chrpath
 BuildRequires:	flex
 BuildRequires:	sysfsutils-devel
 BuildRequires:	pkgconfig(librrd)
-Requires(preun,post):	systemd-units
+Requires(post):	rpm-helper
+Requires(preun):	rpm-helper
 %ifarch %{ix86} x86_64
 Requires:	dmidecode
 %endif
@@ -62,25 +63,26 @@ take advantage of lm_sensors if found.
 %build
 %setup_compile_flags
 
-%make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
+%make PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
 	PROG_EXTRA=sensord user
 
 %install
-make PREFIX=%{_prefix} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
+make PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
 	DESTDIR=%{buildroot} user_install
+
 rm %{buildroot}%{_libdir}/libsensors.a
 
 ln -s sensors.conf.5.gz %{buildroot}%{_mandir}/man5/sensors3.conf.5.gz
 
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 mkdir -p %{buildroot}%{_sysconfdir}/sensors.d
-mkdir -p %{buildroot}%{_initrddir}
 mkdir -p %{buildroot}%{_unitdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/lm_sensors
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/sensord
-install -p -m 755 prog/init/lm_sensors.init %{buildroot}%{_initrddir}/lm_sensors
-install -p -m 755 prog/init/fancontrol.init %{buildroot}%{_initrddir}/fancontrol
+# (tpg) service files
 install -p -m 644 prog/init/lm_sensors.service %{buildroot}%{_unitdir}
+install -p -m 644 prog/init/sensord.service %{buildroot}%{_unitdir}
+install -p -m 644 prog/init/fancontrol.service %{buildroot}%{_unitdir}
 
 cat > README.urpmi << EOF
 * To use this package, you will have to launch "sensors-detect" as root, and ask few questions.
@@ -91,34 +93,17 @@ cat > README.urpmi << EOF
   (or i2c-viapro + another sensor)
 EOF
 
-# Note non standard systemd scriptlets, since reload / stop makes no sense
-# for lm_sensors
-%triggerun -- lm_sensors < 3.3.0-2
-if [ -L /etc/rc3.d/S26lm_sensors ]; then
-    /bin/systemctl enable lm_sensors.service >/dev/null 2>&1 || :
-fi
-/sbin/chkconfig --del lm_sensors
-
-#fix mistake with sensord instead lm_sensors in /etc/init.d
-%triggerrun -- lm_sensors = 3.3.1-5
-/sbin/chkconfig --del sensord
+%post
+%_post_service lm_sensors
+%_post_service sensord
 
 %preun
-if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable lm_sensors.service > /dev/null 2>&1 || :
-fi
-/bin/systemctl disable --quiet lm_sensors.service
-
-%post
-/bin/systemctl enable --quiet lm_sensors.service
-
+%_preun_service lm_sensors
+%_preun_service sensord
 
 %files
 %doc CHANGES CONTRIBUTORS README doc README.urpmi
 %config(noreplace) %{_sysconfdir}/sensors3.conf
-%{_initrddir}/lm_sensors
-%{_initrddir}/fancontrol
 %config(noreplace) %{_sysconfdir}/sysconfig/sensord
 %config(noreplace) %{_sysconfdir}/sysconfig/lm_sensors
 %{_bindir}/sensors
@@ -134,7 +119,7 @@ fi
 %{_mandir}/man8/*
 %{_sbindir}/fancontrol
 %{_sbindir}/pwmconfig
-%{_unitdir}/lm_sensors.service
+%{_unitdir}/*.service
 
 %files -n %{libname}
 %{_libdir}/libsensors.so.%{major}*
