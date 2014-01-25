@@ -5,8 +5,8 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Epoch:		1
-Version:	3.3.4
-Release:	6
+Version:	3.3.5
+Release:	1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lm-sensors.org
@@ -108,7 +108,7 @@ EOF
 %config(noreplace) %{_sysconfdir}/sysconfig/lm_sensors
 %{_bindir}/sensors
 %{_bindir}/sensors-conf-convert
-%ifnarch ppc %arm %mips
+%ifnarch ppc %{arm} %{mips}
 %{_sbindir}/isadump
 %{_sbindir}/isaset
 %endif
