@@ -108,7 +108,7 @@ EOF
 %config(noreplace) %{_sysconfdir}/sysconfig/lm_sensors
 %{_bindir}/sensors
 %{_bindir}/sensors-conf-convert
-%ifnarch ppc %{arm} %{mips}
+%ifnarch ppc %{arm} %{mips} aarch64
 %{_sbindir}/isadump
 %{_sbindir}/isaset
 %endif
