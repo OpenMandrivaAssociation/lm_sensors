@@ -63,7 +63,7 @@ take advantage of lm_sensors if found.
 %build
 %setup_compile_flags
 
-%make PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
+%make CC=%{__cc} PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
 	PROG_EXTRA=sensord user
 
 %install
