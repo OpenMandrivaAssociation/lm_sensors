@@ -1,0 +1,32 @@
+diff -Naur lm_sensors-3.3.5/prog/init/fancontrol.service lm_sensors-3.3.5.tpg/prog/init/fancontrol.service
+--- lm_sensors-3.3.5/prog/init/fancontrol.service	2013-06-03 12:36:47.000000000 +0000
++++ lm_sensors-3.3.5.tpg/prog/init/fancontrol.service	2015-03-08 00:22:51.807508656 +0000
+@@ -2,6 +2,7 @@
+ Description=Start fan control, if configured
+ ConditionFileNotEmpty=/etc/fancontrol
+ After=lm_sensors.service
++ConditionVirtualization=no
+ 
+ [Service]
+ Type=simple
+diff -Naur lm_sensors-3.3.5/prog/init/lm_sensors.service lm_sensors-3.3.5.tpg/prog/init/lm_sensors.service
+--- lm_sensors-3.3.5/prog/init/lm_sensors.service	2014-01-19 16:57:33.000000000 +0000
++++ lm_sensors-3.3.5.tpg/prog/init/lm_sensors.service	2015-03-08 00:22:45.031327750 +0000
+@@ -1,5 +1,6 @@
+ [Unit]
+ Description=Initialize hardware monitoring sensors
++ConditionVirtualization=no
+ 
+ [Service]
+ EnvironmentFile=/etc/sysconfig/lm_sensors
+diff -Naur lm_sensors-3.3.5/prog/init/sensord.service lm_sensors-3.3.5.tpg/prog/init/sensord.service
+--- lm_sensors-3.3.5/prog/init/sensord.service	2014-01-19 16:57:33.000000000 +0000
++++ lm_sensors-3.3.5.tpg/prog/init/sensord.service	2015-03-08 00:22:36.438098337 +0000
+@@ -1,6 +1,7 @@
+ [Unit]
+ Description=Log hardware monitoring data
+ After=lm_sensors.service
++ConditionVirtualization=no
+ 
+ [Service]
+ EnvironmentFile=/etc/sysconfig/sensord

@@ -6,7 +6,7 @@ Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Epoch:		1
 Version:	3.3.5
-Release:	4
+Release:	5
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lm-sensors.org
@@ -14,6 +14,7 @@ Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
 Source1:	lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2:	sensord.sysconfig
+Patch0:		lm_sensors-3.3.5-add-ConditionVirtualization-no.patch
 BuildRequires:	bison
 BuildRequires:	chrpath
 BuildRequires:	flex
@@ -59,6 +60,7 @@ take advantage of lm_sensors if found.
 
 %prep
 %setup -q
+%apply_patches
 
 %build
 %setup_compile_flags
@@ -93,13 +95,6 @@ cat > README.urpmi << EOF
   (or i2c-viapro + another sensor)
 EOF
 
-%post
-%_post_service lm_sensors
-%_post_service sensord
-
-%preun
-%_preun_service lm_sensors
-%_preun_service sensord
 
 %files
 %doc CHANGES CONTRIBUTORS README doc README.urpmi
