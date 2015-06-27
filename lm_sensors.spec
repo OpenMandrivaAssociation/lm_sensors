@@ -5,8 +5,8 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Epoch:		1
-Version:	3.3.5
-Release:	5
+Version:	3.4.0
+Release:	1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lm-sensors.org
@@ -124,4 +124,3 @@ EOF
 %dir %{_includedir}/sensors
 %{_includedir}/sensors/*
 %{_mandir}/man3/*
-
