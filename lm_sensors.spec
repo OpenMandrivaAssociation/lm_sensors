@@ -5,8 +5,8 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Epoch:		1
-Version:	3.3.4
-Release:	3
+Version:	3.4.0
+Release:	0.1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lm-sensors.org
@@ -14,6 +14,7 @@ Source0:	http://dl.lm-sensors.org/lm-sensors/releases/%{name}-%{version}.tar.bz2
 Source1:	lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2:	sensord.sysconfig
+Patch0:		lm_sensors-3.3.5-add-ConditionVirtualization-no.patch
 BuildRequires:	bison
 BuildRequires:	chrpath
 BuildRequires:	flex
@@ -59,11 +60,12 @@ take advantage of lm_sensors if found.
 
 %prep
 %setup -q
+%apply_patches
 
 %build
 %setup_compile_flags
 
-%make PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
+%make CC=%{__cc} PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
 	PROG_EXTRA=sensord user
 
 %install
@@ -94,12 +96,14 @@ cat > README.urpmi << EOF
 EOF
 
 %post
-%_post_service lm_sensors
-%_post_service sensord
+%systemd_post lm_sensors
+%systemd_post sensord
+%systemd_post fancontrol
 
 %preun
-%_preun_service lm_sensors
-%_preun_service sensord
+%systemd_preun lm_sensors
+%systemd_preun sensord
+%systemd_preun fancontrol
 
 %files
 %doc CHANGES CONTRIBUTORS README doc README.urpmi
@@ -108,7 +112,7 @@ EOF
 %config(noreplace) %{_sysconfdir}/sysconfig/lm_sensors
 %{_bindir}/sensors
 %{_bindir}/sensors-conf-convert
-%ifnarch ppc %arm %mips
+%ifnarch ppc %{arm} %{mips} aarch64
 %{_sbindir}/isadump
 %{_sbindir}/isaset
 %endif
@@ -129,4 +133,3 @@ EOF
 %dir %{_includedir}/sensors
 %{_includedir}/sensors/*
 %{_mandir}/man3/*
-
