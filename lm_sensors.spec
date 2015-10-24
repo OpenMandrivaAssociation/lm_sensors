@@ -6,7 +6,7 @@ Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Epoch:		1
 Version:	3.4.0
-Release:	3
+Release:	4
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lm-sensors.org
@@ -20,8 +20,6 @@ BuildRequires:	chrpath
 BuildRequires:	flex
 BuildRequires:	sysfsutils-devel
 BuildRequires:	pkgconfig(librrd)
-Requires(post):	rpm-helper
-Requires(preun):	rpm-helper
 %ifarch %{ix86} x86_64
 Requires:	dmidecode
 %endif
@@ -65,7 +63,7 @@ take advantage of lm_sensors if found.
 %build
 %setup_compile_flags
 
-%make CC=%{__cc} PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS=%{ldflags} \
+%make CC="%{__cc}" PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS="%{ldflags}" \
 	PROG_EXTRA=sensord user
 
 %install
