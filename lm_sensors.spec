@@ -1,18 +1,16 @@
-%define major 4
+%define major 5
 %define libname %mklibname %{name} %{major}
 %define devname %mklibname %{name} -d
-
-%define pre 20180905
 
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Epoch:		1
-Version:	3.4.1
-Release:	%{?pre:0.%{pre}.}1
+Version:	3.5.0
+Release:	1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		http://github.com/lm-sensors/lm-sensors
-Source0:	https://github.com/lm-sensors/lm-sensors/archive/master.tar.gz
+Source0:	https://github.com/lm-sensors/lm-sensors/archive/V3-5-0.tar.gz
 Source1:	lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2:	sensord.sysconfig
@@ -59,7 +57,7 @@ You might want to use this package while building applications that might
 take advantage of lm_sensors if found.
 
 %prep
-%autosetup -n lm-sensors-master -p1
+%autosetup -n lm-sensors-3-5-0 -p1
 
 %build
 %setup_compile_flags
