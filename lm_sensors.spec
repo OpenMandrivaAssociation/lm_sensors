@@ -6,7 +6,7 @@ Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Epoch:		1
 Version:	3.5.0
-Release:	1
+Release:	2
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		http://github.com/lm-sensors/lm-sensors
