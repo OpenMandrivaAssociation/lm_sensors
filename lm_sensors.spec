@@ -20,7 +20,7 @@ BuildRequires:	chrpath
 BuildRequires:	flex
 BuildRequires:	sysfsutils-devel
 BuildRequires:	pkgconfig(librrd)
-%ifarch %{ix86} x86_64
+%ifarch %{ix86} %{x86_64}
 Requires:	dmidecode
 %endif
 
