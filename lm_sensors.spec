@@ -112,12 +112,13 @@ export LD_LIBRARY_PATH="$(pwd)/lib"
 cd build32
 make CC="gcc -m32" PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_prefix}/lib MANDIR=%{_mandir} \
 	DESTDIR=%{buildroot} user_install
+rm -f %{buildroot}%{_prefix}/lib/libsensors.a
 cd ..
 %endif
 make PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
 	DESTDIR=%{buildroot} user_install
 
-rm %{buildroot}%{_libdir}/libsensors.a %{buildroot}%{_prefix}/lib/libsensors.a
+rm %{buildroot}%{_libdir}/libsensors.a
 
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 mkdir -p %{buildroot}%{_sysconfdir}/sensors.d
