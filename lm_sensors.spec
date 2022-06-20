@@ -33,6 +33,9 @@ BuildRequires:	pkgconfig(librrd)
 %ifarch %{ix86} %{x86_64}
 Requires:	dmidecode
 %endif
+%if %{with compat32}
+BuildRequires:	libc6
+%endif
 
 %description
 This package contains a collection of user space tools for general SMBus
