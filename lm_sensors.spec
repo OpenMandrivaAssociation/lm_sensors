@@ -16,7 +16,7 @@ Name:		lm_sensors
 Epoch:		1
 Version:	3.6.0
 %define dashedv %(echo %{version} |sed -e 's,\\.,-,g')
-Release:	1
+Release:	2
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		http://github.com/lm-sensors/lm-sensors
@@ -99,23 +99,23 @@ cd build32
 export LD_LIBRARY_PATH="$(pwd)/lib"
 export CFLAGS="$(echo ${CFLAGS} |sed -e 's,-m64,,g')"
 export LDFLAGS="$(echo ${LDFLAGS} |sed -e 's,-m64,,g')"
-%make_build CC="gcc -m32" PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_prefix}/lib MANDIR=%{_mandir} EXTRALDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g') -m32" user
+%make_build CC="gcc -m32" PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_prefix}/lib MANDIR=%{_mandir} EXTRALDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g') -m32" user
 cd ..
 %endif
 
 export LD_LIBRARY_PATH="$(pwd)/lib"
-%make CC="%{__cc}" PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS="%{ldflags}" \
+%make CC="%{__cc}" PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} EXLDFLAGS="%{ldflags}" \
 	PROG_EXTRA=sensord user
 
 %install
 %if %{with compat32}
 cd build32
-make CC="gcc -m32" PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_prefix}/lib MANDIR=%{_mandir} \
+make CC="gcc -m32" PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_prefix}/lib MANDIR=%{_mandir} \
 	DESTDIR=%{buildroot} user_install
 rm -f %{buildroot}%{_prefix}/lib/libsensors.a
 cd ..
 %endif
-make PREFIX=%{_prefix} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
+make PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
 	DESTDIR=%{buildroot} user_install
 
 rm %{buildroot}%{_libdir}/libsensors.a
