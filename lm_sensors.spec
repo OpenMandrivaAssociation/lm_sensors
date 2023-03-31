@@ -16,7 +16,7 @@ Name:		lm_sensors
 Epoch:		1
 Version:	3.6.0
 %define dashedv %(echo %{version} |sed -e 's,\\.,-,g')
-Release:	2
+Release:	3
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		http://github.com/lm-sensors/lm-sensors
