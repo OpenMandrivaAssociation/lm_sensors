@@ -19,7 +19,7 @@ Version:	3.6.0
 Release:	3
 License:	LGPLv2+
 Group:		System/Kernel and hardware
-Url:		http://github.com/lm-sensors/lm-sensors
+Url:		https://github.com/lm-sensors/lm-sensors
 Source0:	https://github.com/lm-sensors/lm-sensors/archive/V%{dashedv}.tar.gz
 Source1:	lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
