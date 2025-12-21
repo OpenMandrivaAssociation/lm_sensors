@@ -25,6 +25,7 @@ Source1:	lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2:	sensord.sysconfig
 Patch0:		lm_sensors-3.3.5-add-ConditionVirtualization-no.patch
+BuildRequires:	make
 BuildRequires:	bison
 BuildRequires:	chrpath
 BuildRequires:	flex
