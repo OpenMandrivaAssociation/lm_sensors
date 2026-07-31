@@ -14,9 +14,9 @@
 Summary:	Utilities for lm_sensors
 Name:		lm_sensors
 Epoch:		1
-Version:	3.6.0
+Version:	3.6.2
 %define dashedv %(echo %{version} |sed -e 's,\\.,-,g')
-Release:	3
+Release:	1
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		https://github.com/lm-sensors/lm-sensors
@@ -24,7 +24,7 @@ Source0:	https://github.com/lm-sensors/lm-sensors/archive/V%{dashedv}.tar.gz
 Source1:	lm_sensors.sysconfig
 # these 2 were taken from PLD-linux, Thanks!
 Source2:	sensord.sysconfig
-Patch0:		lm_sensors-3.3.5-add-ConditionVirtualization-no.patch
+# dropped (no longer applies): Patch0:		lm_sensors-3.3.5-add-ConditionVirtualization-no.patch
 BuildRequires:	make
 BuildRequires:	bison
 BuildRequires:	chrpath
@@ -91,7 +91,7 @@ take advantage of lm_sensors if found.
 %endif
 
 %prep
-%autosetup -n lm-sensors-%{dashedv} -p1
+%autosetup -n lm-sensors-3-6-2 -p1
 
 %build
 %setup_compile_flags
