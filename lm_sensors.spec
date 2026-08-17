@@ -16,7 +16,7 @@ Name:		lm_sensors
 Epoch:		1
 Version:	3.6.2
 %define dashedv %(echo %{version} |sed -e 's,\\.,-,g')
-Release:	2
+Release:	3
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		https://github.com/lm-sensors/lm-sensors
@@ -36,6 +36,7 @@ Requires:	dmidecode
 %endif
 %if %{with compat32}
 BuildRequires:	libc6
+BuildRequires:	libatomic1
 %endif
 
 %description
@@ -103,7 +104,10 @@ cd build32
 export LD_LIBRARY_PATH="$(pwd)/lib"
 export CFLAGS="$(echo ${CFLAGS} |sed -e 's,-m64,,g')"
 export LDFLAGS="$(echo ${LDFLAGS} |sed -e 's,-m64,,g')"
-%make_build CC="gcc -m32" PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_prefix}/lib MANDIR=%{_mandir} EXTRALDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g') -m32" user
+# gcc -m32 pulls -latomic_asneeded; 32-bit devel is not packaged on x86_64
+mkdir -p compat32-ld
+printf '%s\n' '/* GNU ld script */' 'INPUT ( AS_NEEDED ( -latomic ) )' > compat32-ld/libatomic_asneeded.so
+%make_build CC="gcc -m32" PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_prefix}/lib MANDIR=%{_mandir} EXTRALDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g') -m32 -L$(pwd)/compat32-ld" user
 cd ..
 %endif
 
