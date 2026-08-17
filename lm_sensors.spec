@@ -16,7 +16,7 @@ Name:		lm_sensors
 Epoch:		1
 Version:	3.6.2
 %define dashedv %(echo %{version} |sed -e 's,\\.,-,g')
-Release:	1
+Release:	2
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		https://github.com/lm-sensors/lm-sensors
@@ -121,6 +121,11 @@ cd ..
 %endif
 make PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
 	DESTDIR=%{buildroot} user_install
+# isadump/isaset use x86 inb/outb (Super-I/O ports), not physical ISA slots.
+# The Makefile still installs them on every arch.
+%ifnarch %{ix86} %{x86_64}
+rm -f %{buildroot}%{_sbindir}/isadump %{buildroot}%{_sbindir}/isaset
+%endif
 
 rm %{buildroot}%{_libdir}/libsensors.a
 
@@ -133,6 +138,7 @@ install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/sensord
 install -p -m 644 prog/init/lm_sensors.service %{buildroot}%{_unitdir}
 install -p -m 644 prog/init/sensord.service %{buildroot}%{_unitdir}
 install -p -m 644 prog/init/fancontrol.service %{buildroot}%{_unitdir}
+install -D -p -m 644 prog/sensors/_sensors %{buildroot}%{_datadir}/zsh/site-functions/_sensors
 
 cat > README.omv << EOF
 * To use this package, you will have to launch "sensors-detect" as root, and ask few questions.
@@ -151,7 +157,7 @@ EOF
 %config(noreplace) %{_sysconfdir}/sysconfig/lm_sensors
 %{_bindir}/sensors
 %{_bindir}/sensors-conf-convert
-%ifnarch ppc %{armx} %{mips} riscv64
+%ifarch %{ix86} %{x86_64}
 %{_sbindir}/isadump
 %{_sbindir}/isaset
 %endif
@@ -162,6 +168,7 @@ EOF
 %{_mandir}/man8/*
 %{_sbindir}/fancontrol
 %{_sbindir}/pwmconfig
+%{_datadir}/zsh/site-functions/*
 %{_unitdir}/*.service
 
 %files -n %{libname}
