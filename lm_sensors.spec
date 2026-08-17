@@ -16,7 +16,7 @@ Name:		lm_sensors
 Epoch:		1
 Version:	3.6.2
 %define dashedv %(echo %{version} |sed -e 's,\\.,-,g')
-Release:	5
+Release:	6
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		https://github.com/lm-sensors/lm-sensors
@@ -36,6 +36,7 @@ Requires:	dmidecode
 %endif
 %if %{with compat32}
 BuildRequires:	libc6
+BuildRequires:	atomic-devel
 %endif
 
 %description
@@ -102,11 +103,8 @@ cp -a $(ls -1 |grep -v build32) build32
 cd build32
 export LD_LIBRARY_PATH="$(pwd)/lib"
 export CFLAGS="$(echo ${CFLAGS} |sed -e 's,-m64,,g')"
-# gcc -m32 pulls -latomic_asneeded; 32-bit libatomic devel is not packaged
-mkdir -p compat32-ld
-echo 'int lm_sensors_atomic_asneeded_stub;' | gcc -m32 -shared -fPIC -o compat32-ld/libatomic_asneeded.so -x c -
-export LDFLAGS="$(echo ${LDFLAGS} |sed -e 's,-m64,,g') -L$(pwd)/compat32-ld"
-%make_build CC="gcc -m32" PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_prefix}/lib MANDIR=%{_mandir} EXLDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g') -m32 -L$(pwd)/compat32-ld" user
+export LDFLAGS="$(echo ${LDFLAGS} |sed -e 's,-m64,,g')"
+%make_build CC="gcc -m32" PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_prefix}/lib MANDIR=%{_mandir} EXLDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g') -m32" user
 cd ..
 %endif
 
