@@ -16,7 +16,7 @@ Name:		lm_sensors
 Epoch:		1
 Version:	3.6.2
 %define dashedv %(echo %{version} |sed -e 's,\\.,-,g')
-Release:	6
+Release:	7
 License:	LGPLv2+
 Group:		System/Kernel and hardware
 Url:		https://github.com/lm-sensors/lm-sensors
@@ -120,7 +120,7 @@ make CC="gcc -m32" PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} L
 rm -f %{buildroot}%{_prefix}/lib/libsensors.a
 cd ..
 %endif
-make PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
+make CC="%{__cc}" PREFIX=%{_prefix} SBINDIR=%{_sbindir} ETCDIR=%{_sysconfdir} LIBDIR=%{_libdir} MANDIR=%{_mandir} PROG_EXTRA=sensord \
 	DESTDIR=%{buildroot} user_install
 # isadump/isaset use x86 inb/outb (Super-I/O ports), not physical ISA slots.
 # The Makefile still installs them on every arch.
